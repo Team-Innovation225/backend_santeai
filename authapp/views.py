@@ -73,7 +73,3 @@ def inscription(request):
 def profil_utilisateur(request):
     uid = request.auth  
     return Response({"uid": uid, "message": "Accès autorisé"})
-
-def authenticate(self, request):
-    print("Headers reçus :", request.headers)
-    # ... reste du code ...
