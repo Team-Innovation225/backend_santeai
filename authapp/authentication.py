@@ -8,7 +8,6 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         auth_header = request.headers.get('Authorization')
         print("🔐 Authorization reçu :", auth_header)
-
         if not auth_header or not auth_header.startswith('Bearer '):
             return None
 

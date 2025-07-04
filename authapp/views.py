@@ -7,6 +7,10 @@ from rest_framework import status
 from .firebase import auth, db
 from .serializers import InscriptionSerializer
 import datetime
+import requests
+from django.http import JsonResponse
+import json
+
 
 def verifier_utilisateur_existe(email):
     try:
@@ -73,3 +77,41 @@ def inscription(request):
 def profil_utilisateur(request):
     uid = request.auth  
     return Response({"uid": uid, "message": "Accès autorisé"})
+
+@csrf_exempt
+def relay_diagnosis(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            response = requests.post(
+                "http://localhost:8000/api/predict",  # ou l'URL de ton backend FastAPI
+                json=data,
+                timeout=10
+            )
+            return JsonResponse(response.json(), safe=False)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+@csrf_exempt
+def relay_feedback(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            response = requests.post(
+                "http://localhost:8000/api/feedback",
+                json=data,
+                timeout=10
+            )
+            return JsonResponse(response.json(), safe=False)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+@csrf_exempt
+def relay_monitoring(request):
+    try:
+        response = requests.get("http://localhost:8000/api/monitoring", timeout=10)
+        return JsonResponse(response.json(), safe=False)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
